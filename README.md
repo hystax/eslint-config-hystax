@@ -4,6 +4,11 @@ Shared ESLint configuration for **Hystax** projects
 
 This package provides a shared ESLint configuration used across Hystax repositories — ready to use and easy to customize.
 
+## ⚙️ Requirements
+
+- Node.js: ≥ 18
+- ESLint: ≥ 9
+
 ## 🚀 Installation
 ```bash
 npm install -D eslint-config-hystax
