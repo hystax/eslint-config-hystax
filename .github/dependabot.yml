@@ -8,6 +8,7 @@ updates:
     versioning-strategy: increase
     assignees:
       - DoRightt
+      - ek-hystax
 
   - package-ecosystem: github-actions
     directory: /
@@ -15,3 +16,4 @@ updates:
       interval: weekly
     assignees:
       - DoRightt
+      - ek-hystax
