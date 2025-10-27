@@ -12,8 +12,6 @@ This package provides a shared ESLint configuration used across Hystax repositor
 ## 🚀 Installation
 ```bash
 npm install -D eslint-config-hystax
-# or
-pnpm add -D eslint-config-hystax
 ```
 
 ## ⚙️ Usage
@@ -54,8 +52,6 @@ You can verify that all configs load correctly:
 
 ```bash
 npm test
-# or
-pnpm test
 ```
 
 ## 📝 Notes
