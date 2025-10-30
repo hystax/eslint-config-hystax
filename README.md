@@ -1,67 +1,54 @@
 # 📦 eslint-config-hystax
 
-Shared ESLint configuration for **Hystax** projects
+Shared ESLint configurations for **Hystax** projects.
 
-This package provides a shared ESLint configuration used across Hystax repositories — ready to use and easy to customize.
+This monorepo contains multiple ESLint configuration packages for different project types (UI, server, etc.), built using the **ESLint Flat Config** format (v9).  
+The goal is to provide consistent linting rules across all Hystax projects.
 
-## ⚙️ Requirements
+---
 
-- Node.js: ≥ 18
-- ESLint: ≥ 9
+## 🧱 Packages
 
-## 🚀 Installation
-```bash
-npm install -D eslint-config-hystax
-```
+| Package                                       | Description                                                     |
+|-----------------------------------------------|-----------------------------------------------------------------|
+| [`eslint-config-hystax-ui`](./packages/ui)    | Shared ESLint config for **frontend/React/TypeScript** projects |
+| *(coming soon)* `eslint-config-hystax-server` | ESLint config for **Node.js / backend** projects                |
+| *(coming soon)* `eslint-config-hystax-base`   | Base rules for all Hystax projects                              |
+
+> Each package can be installed and used independently.
+
+---
 
 ## ⚙️ Usage
 
-In your project’s _eslint.config.mjs_, import and use the shared configuration.
+Install the desired package in your project:
 
-Basic example (UI project)
-```javascript
-import { uiConfig } from "eslint-config-hystax";
-export default uiConfig;
+```bash
+npm install -D eslint-config-hystax-ui
 ```
 
-You can also use an array form if you plan to combine multiple configs:
+For details on usage, overriding rules, or customizing file globs, see the [`eslint-config-hystax-ui` README](./packages/ui/README.md).
 
-```javascript
-import { uiConfig } from "eslint-config-hystax";
-export default [uiConfig];
-```
+---
 
-## 🧩 Override file globs or rules
-```javascript
-import { uiConfig } from "eslint-config-hystax";
-export default [
-  {
-    ...uiConfig,
-    files: ["src/**/*.{ts,tsx}"],
-    rules: {
-      ...uiConfig.rules,
-      "no-console": "warn"
-    }
-  }
-];
-```
+## 🧪 Development & Testing
 
-## 🧪 Test configuration
+These commands are for contributors and maintainers to verify that all ESLint configs load correctly:
 
-You can verify that all configs load correctly:
+---
 
+#### Run tests for all packages
 ```bash
 npm test
 ```
 
-## 📝 Notes
+#### Run tests for a specific package
+```bash
+npm run test --workspace=eslint-config-hystax-ui
+```
 
-- ESLint flat config format (v9) is used — no "_extends_" field needed.
+---
 
-- Works with React, TypeScript, and Prettier.
-
-- Designed for consistency across all Hystax frontend projects.
-
-## 📄License
+## 📄 License
 
 [Apache License Version 2.0](https://choosealicense.com/licenses/apache-2.0/)

@@ -1,0 +1,46 @@
+{
+  "name": "eslint-config-hystax-ui",
+  "version": "1.0.0",
+  "description": "UI ESLint config for Hystax projects",
+  "main": "index.mjs",
+  "type": "module",
+  "license": "Apache-2.0",
+  "files": [
+    "index.mjs",
+    "rules/",
+    "README.md"
+  ],
+  "keywords": [
+    "eslint",
+    "config",
+    "eslintconfig",
+    "eslint-config",
+    "hystax"
+  ],
+  "scripts": {
+    "test": "node ./test.mjs",
+    "build": "rm -rf ./dist && mkdir -p ./dist && npm pack --pack-destination=./dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hystax/eslint-config-hystax.git",
+    "directory": "packages/ui"
+  },
+  "author": "Hystax (https://hystax.com)",
+  "bugs": {
+    "url": "https://github.com/hystax/eslint-config-hystax/issues"
+  },
+  "homepage": "https://github.com/hystax/eslint-config-hystax#readme",
+  "dependencies": {
+    "eslint": "^9.34.0",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "@typescript-eslint/parser": "^8.41.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "prettier": "^3.3.3",
+    "eslint-config-prettier": "^9.1.0"
+  }
+}

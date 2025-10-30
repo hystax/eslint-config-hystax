@@ -1,4 +1,3 @@
-import { baseConfig } from "./base.mjs";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import eslintPluginImport from "eslint-plugin-import";
@@ -13,8 +12,15 @@ import reactRules from "./rules/react.mjs";
 import importsRules from "./rules/imports.mjs";
 import prettierRules from "./rules/prettier.mjs";
 
-export const uiConfig = {
-  ...baseConfig,
+export default {
+  ignores: [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/stories/**"
+  ],
+  
   files: ["src/**/*.{ts,tsx}"],
 
   plugins: {
