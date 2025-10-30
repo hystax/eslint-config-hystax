@@ -31,8 +31,10 @@
     "url": "https://github.com/hystax/eslint-config-hystax/issues"
   },
   "homepage": "https://github.com/hystax/eslint-config-hystax#readme",
+  "peerDependencies": {
+    "eslint": "^9.34.0"
+  },
   "dependencies": {
-    "eslint": "^9.34.0",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-prettier": "^5.2.1",

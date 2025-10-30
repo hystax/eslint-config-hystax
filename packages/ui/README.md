@@ -4,21 +4,16 @@ Shared **UI** ESLint configuration for **Hystax** projects
 
 This package provides a shared ESLint configuration used across Hystax repositories — ready to use and easy to customize.
 
----
-
 ## ⚙️ Requirements
 
 - Node.js: ≥ 18
 - ESLint: ≥ 9
 
----
-
 ## 🚀 Installation
+
 ```bash
 npm install -D eslint-config-hystax-ui
 ```
-
----
 
 ## ⚙️ Usage
 
@@ -52,8 +47,6 @@ export default [
 ];
 ```
 
----
-
 ## 📝 Notes
 
 - ESLint flat config format (v9) is used — no "_extends_" field needed.
@@ -61,8 +54,6 @@ export default [
 - Works with React, TypeScript, and Prettier.
 
 - Designed for consistency across all Hystax frontend projects.
-
----
 
 ## 📄 License
 

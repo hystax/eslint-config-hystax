@@ -5,8 +5,6 @@ Shared ESLint configurations for **Hystax** projects.
 This monorepo contains multiple ESLint configuration packages for different project types (UI, server, etc.), built using the **ESLint Flat Config** format (v9).  
 The goal is to provide consistent linting rules across all Hystax projects.
 
----
-
 ## 🧱 Packages
 
 | Package                                       | Description                                                     |
@@ -16,8 +14,6 @@ The goal is to provide consistent linting rules across all Hystax projects.
 | *(coming soon)* `eslint-config-hystax-base`   | Base rules for all Hystax projects                              |
 
 > Each package can be installed and used independently.
-
----
 
 ## ⚙️ Usage
 
@@ -29,13 +25,9 @@ npm install -D eslint-config-hystax-ui
 
 For details on usage, overriding rules, or customizing file globs, see the [`eslint-config-hystax-ui` README](./packages/ui/README.md).
 
----
-
 ## 🧪 Development & Testing
 
 These commands are for contributors and maintainers to verify that all ESLint configs load correctly:
-
----
 
 #### Run tests for all packages
 ```bash
@@ -46,8 +38,6 @@ npm test
 ```bash
 npm run test --workspace=eslint-config-hystax-ui
 ```
-
----
 
 ## 📄 License
 
