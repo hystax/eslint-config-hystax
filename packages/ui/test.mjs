@@ -1,6 +1,5 @@
 const files = [
   "./index.mjs",
-  "../../base.mjs",
   "./rules/base.mjs",
   "./rules/react.mjs",
   "./rules/imports.mjs",
