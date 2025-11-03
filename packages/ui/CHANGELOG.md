@@ -9,5 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release of `eslint-config-hystax-ui`
 - Includes base ESLint rules for UI projects (React, JSX, TypeScript, Prettier, etc.)
 
-[Unreleased]: https://github.com/hystax/eslint-config-hystax/compare/20251103-01...main
 [1.0.0]: https://github.com/hystax/eslint-config-hystax/tree/20251103-01/packages/ui
