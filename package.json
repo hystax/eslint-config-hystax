@@ -1,0 +1,25 @@
+{
+  "name": "eslint-config-hystax",
+  "version": "1.0.0",
+  "description": "Shared ESLint config for Hystax projects",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "npm run build --workspace=eslint-config-hystax-ui",
+    "test": "npm run test --workspace=eslint-config-hystax-ui"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hystax/eslint-config-hystax.git"
+  },
+  "type": "module",
+  "author": "Hystax (https://hystax.com)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hystax/eslint-config-hystax/issues"
+  },
+  "homepage": "https://github.com/hystax/eslint-config-hystax#readme"
+}
