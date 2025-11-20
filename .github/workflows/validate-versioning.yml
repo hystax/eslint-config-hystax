@@ -135,6 +135,7 @@ jobs:
             echo "✅ Version was bumped from $BASE_VERSION to $CURRENT_VERSION (valid semver increment)"
           fi
           
+          #some new comment
           # Verify version in package-lock.json matches package.json
           LOCKFILE_TOP_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').version)")
           LOCKFILE_PACKAGE_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').packages[''].version)")
