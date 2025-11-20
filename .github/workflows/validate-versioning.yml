@@ -60,6 +60,7 @@ jobs:
           
           # Validate version format and check if version was increased (semantic versioning)
           echo "Validating version format and increment..."
+          set +e
           VERSION_CHECK=$(node -e "
             const semver = require('semver');
             const current = '$CURRENT_VERSION';
@@ -101,57 +102,55 @@ jobs:
           " 2>&1)
           
           VERSION_CHECK_EXIT=$?
+          set -e
           
           echo "Full version check output:"
           echo "$VERSION_CHECK"
           
-          VERSION_CHECK_OUTPUT=$(echo "$VERSION_CHECK" | head -1)
-          echo "First line of output: $VERSION_CHECK_OUTPUT"
+          VERSION_CHECK_OUTPUT=$(echo "$VERSION_CHECK" | head -1 | tr -d '\r\n')
+          echo "First line of output: '$VERSION_CHECK_OUTPUT'"
+          echo "Exit code: $VERSION_CHECK_EXIT"
           
           if [ $VERSION_CHECK_EXIT -ne 0 ]; then
             echo "::error file=$PACKAGE_DIR/package.json::Version validation failed"
-            case "$VERSION_CHECK_OUTPUT" in
-              "INVALID_CURRENT")
-                echo "::error::Current version '$CURRENT_VERSION' is not a valid semantic version!"
-                echo "❌ ERROR: Current version '$CURRENT_VERSION' is not a valid semantic version!"
-                echo "Please use semantic versioning format (e.g., 1.0.0, 1.0.1, 1.1.0, 2.0.0)"
-                exit 1
-                ;;
-              "INVALID_BASE")
-                echo "⚠️  WARNING: Base version '$BASE_VERSION' is not a valid semantic version"
-                echo "Assuming version bump is valid (first release or manual version)"
-                ;;
-              "SAME_VERSION")
-                echo "::error file=$PACKAGE_DIR/package.json::Version was not bumped!"
-                echo "❌ ERROR: Version in package.json was not bumped!"
-                echo "Current version: $CURRENT_VERSION"
-                echo "Base version: $BASE_VERSION"
-                echo "Please bump the version in packages/ui/package.json"
-                exit 1
-                ;;
-              "VERSION_NOT_INCREASED")
-                PATCH_VER=$(echo "$VERSION_CHECK" | grep "PATCH=" | cut -d= -f2)
-                MINOR_VER=$(echo "$VERSION_CHECK" | grep "MINOR=" | cut -d= -f2)
-                MAJOR_VER=$(echo "$VERSION_CHECK" | grep "MAJOR=" | cut -d= -f2)
-                echo "::error file=$PACKAGE_DIR/package.json::Version must be greater than base version!"
-                echo "❌ ERROR: Version must be greater than the base version!"
-                echo "Current version: $CURRENT_VERSION"
-                echo "Base version: $BASE_VERSION"
-                echo "The new version must be higher according to semantic versioning rules."
-                echo "Suggested versions:"
-                echo "  - Patch: $BASE_VERSION -> $PATCH_VER"
-                echo "  - Minor: $BASE_VERSION -> $MINOR_VER"
-                echo "  - Major: $BASE_VERSION -> $MAJOR_VER"
-                exit 1
-                ;;
-              *)
-                echo "::error::Unknown version validation error"
-                echo "❌ ERROR: Unknown version validation error"
-                echo "Full output was:"
-                echo "$VERSION_CHECK"
-                exit 1
-                ;;
-            esac
+            
+            if echo "$VERSION_CHECK" | grep -q "INVALID_CURRENT"; then
+              echo "::error::Current version '$CURRENT_VERSION' is not a valid semantic version!"
+              echo "❌ ERROR: Current version '$CURRENT_VERSION' is not a valid semantic version!"
+              echo "Please use semantic versioning format (e.g., 1.0.0, 1.0.1, 1.1.0, 2.0.0)"
+              exit 1
+            elif echo "$VERSION_CHECK" | grep -q "INVALID_BASE"; then
+              echo "⚠️  WARNING: Base version '$BASE_VERSION' is not a valid semantic version"
+              echo "Assuming version bump is valid (first release or manual version)"
+            elif echo "$VERSION_CHECK" | grep -q "SAME_VERSION"; then
+              echo "::error file=$PACKAGE_DIR/package.json::Version was not bumped!"
+              echo "❌ ERROR: Version in package.json was not bumped!"
+              echo "Current version: $CURRENT_VERSION"
+              echo "Base version: $BASE_VERSION"
+              echo "Please bump the version in packages/ui/package.json"
+              exit 1
+            elif echo "$VERSION_CHECK" | grep -q "VERSION_NOT_INCREASED"; then
+              PATCH_VER=$(echo "$VERSION_CHECK" | grep "PATCH=" | cut -d= -f2)
+              MINOR_VER=$(echo "$VERSION_CHECK" | grep "MINOR=" | cut -d= -f2)
+              MAJOR_VER=$(echo "$VERSION_CHECK" | grep "MAJOR=" | cut -d= -f2)
+              echo "::error file=$PACKAGE_DIR/package.json::Version must be greater than base version!"
+              echo "❌ ERROR: Version must be greater than the base version!"
+              echo "Current version: $CURRENT_VERSION"
+              echo "Base version: $BASE_VERSION"
+              echo "The new version must be higher according to semantic versioning rules."
+              echo "Suggested versions:"
+              echo "  - Patch: $BASE_VERSION -> $PATCH_VER"
+              echo "  - Minor: $BASE_VERSION -> $MINOR_VER"
+              echo "  - Major: $BASE_VERSION -> $MAJOR_VER"
+              exit 1
+            else
+              echo "::error::Unknown version validation error"
+              echo "❌ ERROR: Unknown version validation error"
+              echo "Exit code: $VERSION_CHECK_EXIT"
+              echo "Full output was:"
+              echo "$VERSION_CHECK"
+              exit 1
+            fi
           else
             echo "✅ Version was bumped from $BASE_VERSION to $CURRENT_VERSION (valid semver increment)"
           fi
