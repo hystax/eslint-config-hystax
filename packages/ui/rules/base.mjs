@@ -27,7 +27,6 @@ export default {
   "no-console": "off",
   "default-param-last": "off",
   "arrow-body-style": ["warn", "as-needed"],
-  "no-unused-vars": "off",
   "@typescript-eslint/ban-ts-comment": "off",
   "@typescript-eslint/no-empty-function": "off",
   "@typescript-eslint/no-unused-vars": ["error", { ignoreRestSiblings: true }],
