@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-hystax-ui",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "UI ESLint config for Hystax projects",
   "main": "index.mjs",
   "type": "module",
