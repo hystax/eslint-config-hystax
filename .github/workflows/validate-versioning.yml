@@ -43,7 +43,11 @@ jobs:
       - name: Validate versioning and changelog
         if: steps.check-changes.outputs.has_changes == 'true'
         run: |
+          set -e
           PACKAGE_DIR="packages/ui"
+          
+          echo "::group::Version Validation"
+          echo "Starting validation for package: $PACKAGE_DIR"
           
           # Get current version from package.json
           CURRENT_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package.json').version)")
@@ -55,6 +59,7 @@ jobs:
           echo "Base version in package.json: $BASE_VERSION"
           
           # Validate version format and check if version was increased (semantic versioning)
+          echo "Validating version format and increment..."
           VERSION_CHECK=$(node -e "
             const semver = require('semver');
             const current = '$CURRENT_VERSION';
@@ -96,11 +101,18 @@ jobs:
           " 2>&1)
           
           VERSION_CHECK_EXIT=$?
+          
+          echo "Full version check output:"
+          echo "$VERSION_CHECK"
+          
           VERSION_CHECK_OUTPUT=$(echo "$VERSION_CHECK" | head -1)
+          echo "First line of output: $VERSION_CHECK_OUTPUT"
           
           if [ $VERSION_CHECK_EXIT -ne 0 ]; then
+            echo "::error file=$PACKAGE_DIR/package.json::Version validation failed"
             case "$VERSION_CHECK_OUTPUT" in
               "INVALID_CURRENT")
+                echo "::error::Current version '$CURRENT_VERSION' is not a valid semantic version!"
                 echo "❌ ERROR: Current version '$CURRENT_VERSION' is not a valid semantic version!"
                 echo "Please use semantic versioning format (e.g., 1.0.0, 1.0.1, 1.1.0, 2.0.0)"
                 exit 1
@@ -110,6 +122,7 @@ jobs:
                 echo "Assuming version bump is valid (first release or manual version)"
                 ;;
               "SAME_VERSION")
+                echo "::error file=$PACKAGE_DIR/package.json::Version was not bumped!"
                 echo "❌ ERROR: Version in package.json was not bumped!"
                 echo "Current version: $CURRENT_VERSION"
                 echo "Base version: $BASE_VERSION"
@@ -120,6 +133,7 @@ jobs:
                 PATCH_VER=$(echo "$VERSION_CHECK" | grep "PATCH=" | cut -d= -f2)
                 MINOR_VER=$(echo "$VERSION_CHECK" | grep "MINOR=" | cut -d= -f2)
                 MAJOR_VER=$(echo "$VERSION_CHECK" | grep "MAJOR=" | cut -d= -f2)
+                echo "::error file=$PACKAGE_DIR/package.json::Version must be greater than base version!"
                 echo "❌ ERROR: Version must be greater than the base version!"
                 echo "Current version: $CURRENT_VERSION"
                 echo "Base version: $BASE_VERSION"
@@ -130,16 +144,30 @@ jobs:
                 echo "  - Major: $BASE_VERSION -> $MAJOR_VER"
                 exit 1
                 ;;
+              *)
+                echo "::error::Unknown version validation error"
+                echo "❌ ERROR: Unknown version validation error"
+                echo "Full output was:"
+                echo "$VERSION_CHECK"
+                exit 1
+                ;;
             esac
           else
             echo "✅ Version was bumped from $BASE_VERSION to $CURRENT_VERSION (valid semver increment)"
           fi
+          echo "::endgroup::"
           
+          echo "::group::Package Lock Validation"
           # Verify version in package-lock.json matches package.json
           LOCKFILE_TOP_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').version)")
           LOCKFILE_PACKAGE_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').packages[''].version)")
           
+          echo "package.json version: $CURRENT_VERSION"
+          echo "package-lock.json top-level version: $LOCKFILE_TOP_VERSION"
+          echo "package-lock.json packages[''].version: $LOCKFILE_PACKAGE_VERSION"
+          
           if [ "$LOCKFILE_TOP_VERSION" != "$CURRENT_VERSION" ]; then
+            echo "::error file=$PACKAGE_DIR/package-lock.json::Version mismatch in package-lock.json (top-level)!"
             echo "❌ ERROR: Version mismatch in package-lock.json (top-level)!"
             echo "package.json version: $CURRENT_VERSION"
             echo "package-lock.json top-level version: $LOCKFILE_TOP_VERSION"
@@ -148,6 +176,7 @@ jobs:
           fi
           
           if [ "$LOCKFILE_PACKAGE_VERSION" != "$CURRENT_VERSION" ]; then
+            echo "::error file=$PACKAGE_DIR/package-lock.json::Version mismatch in package-lock.json (packages[''])!"
             echo "❌ ERROR: Version mismatch in package-lock.json (packages[''])!"
             echo "package.json version: $CURRENT_VERSION"
             echo "package-lock.json packages[''].version: $LOCKFILE_PACKAGE_VERSION"
@@ -156,10 +185,16 @@ jobs:
           fi
           
           echo "✅ Version in package-lock.json matches package.json: $CURRENT_VERSION (both top-level and packages[''])"
+          echo "::endgroup::"
           
+          echo "::group::Changelog Validation"
           # Check if changelog has entry for this version
           CHANGELOG_FILE="$PACKAGE_DIR/CHANGELOG.md"
+          echo "Checking changelog file: $CHANGELOG_FILE"
+          echo "Looking for version: $CURRENT_VERSION"
+          
           if ! grep -q "^## \\[$CURRENT_VERSION\\]" "$CHANGELOG_FILE"; then
+            echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION not found!"
             echo "❌ ERROR: Changelog entry for version $CURRENT_VERSION not found!"
             echo "Please add a changelog entry in $CHANGELOG_FILE with the format:"
             echo "## [$CURRENT_VERSION] - YYYY-MM-DD"
@@ -171,9 +206,12 @@ jobs:
           # Verify changelog entry is not empty (has content after the version header)
           CHANGELOG_LINE=$(grep -n "^## \\[$CURRENT_VERSION\\]" "$CHANGELOG_FILE" | cut -d: -f1)
           if [ -z "$CHANGELOG_LINE" ]; then
+            echo "::error file=$CHANGELOG_FILE::Could not find changelog entry line"
             echo "❌ ERROR: Could not find changelog entry line"
             exit 1
           fi
+          
+          echo "Changelog entry found at line: $CHANGELOG_LINE"
           
           # Check if there's content after the version header (skip empty entries)
           NEXT_VERSION_LINE=$(tail -n +$((CHANGELOG_LINE + 1)) "$CHANGELOG_FILE" | grep -n "^## \\[" | head -1 | cut -d: -f1)
@@ -181,6 +219,7 @@ jobs:
             # This is the latest version, check if there's any content after the header
             LINES_AFTER_HEADER=$(tail -n +$((CHANGELOG_LINE + 1)) "$CHANGELOG_FILE" | grep -v '^$' | head -1)
             if [ -z "$LINES_AFTER_HEADER" ]; then
+              echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION is empty!"
               echo "❌ ERROR: Changelog entry for version $CURRENT_VERSION is empty!"
               echo "Please add at least one change entry (Added, Changed, Fixed, etc.)"
               exit 1
@@ -189,10 +228,15 @@ jobs:
             # Check if there's content between this version and the next
             LINES_BETWEEN=$(sed -n "$((CHANGELOG_LINE + 1)),$((CHANGELOG_LINE + NEXT_VERSION_LINE - 1))p" "$CHANGELOG_FILE" | grep -v '^$' | head -1)
             if [ -z "$LINES_BETWEEN" ]; then
+              echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION is empty!"
               echo "❌ ERROR: Changelog entry for version $CURRENT_VERSION is empty!"
               echo "Please add at least one change entry (Added, Changed, Fixed, etc.)"
               exit 1
             fi
           fi
-                    echo "✅ Changelog entry for version $CURRENT_VERSION has content"
+          
+          echo "✅ Changelog entry for version $CURRENT_VERSION has content"
+          echo "::endgroup::"
+          
+          echo "::notice::All validations passed successfully!"
           
