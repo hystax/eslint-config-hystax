@@ -9,6 +9,8 @@ This package provides a shared ESLint configuration used across Hystax repositor
 - Node.js: ≥ 18
 - ESLint: ≥ 9
 
+TEST
+
 ## 🚀 Installation
 
 ```bash
