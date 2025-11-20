@@ -19,7 +19,10 @@
   ],
   "scripts": {
     "test": "node ./test.mjs",
-    "build": "rm -rf ./dist && mkdir -p ./dist && npm pack --pack-destination=./dist"
+    "build": "rm -rf ./dist && mkdir -p ./dist && npm pack --pack-destination=./dist",
+    "prepublish": "npm run test && npm run build",
+    "publish": "git push && git push --tags && npm publish",
+    "publish:dry-run": "npm publish --dry-run"
   },
   "repository": {
     "type": "git",

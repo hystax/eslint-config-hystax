@@ -4,12 +4,14 @@
   "description": "Shared ESLint config for Hystax projects",
   "private": true,
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "workspaces": ["packages/*"],
   "scripts": {
     "build": "npm run build --workspace=eslint-config-hystax-ui",
-    "test": "npm run test --workspace=eslint-config-hystax-ui"
+    "test": "npm run test --workspace=eslint-config-hystax-ui",
+    "publish:ui": "npm run publish --workspace=eslint-config-hystax-ui",
+    "publish:ui:dry-run": "npm run publish:dry-run --workspace=eslint-config-hystax-ui"
   },
   "repository": {
     "type": "git",
