@@ -8,10 +8,10 @@
   },
   "workspaces": ["packages/*"],
   "scripts": {
-    "build": "npm run build --workspace=eslint-config-hystax-ui",
-    "test": "npm run test --workspace=eslint-config-hystax-ui",
-    "publish:ui": "npm run publish --workspace=eslint-config-hystax-ui",
-    "publish:ui:dry-run": "npm run publish:dry-run --workspace=eslint-config-hystax-ui"
+    "build": "npm run build --workspace=eslint-config-sukhov-test-ui",
+    "test": "npm run test --workspace=eslint-config-sukhov-test-ui",
+    "publish:ui": "npm run publish --workspace=eslint-config-sukhov-test-ui",
+    "publish:ui:dry-run": "npm run publish:dry-run --workspace=eslint-config-sukhov-test-ui"
   },
   "repository": {
     "type": "git",

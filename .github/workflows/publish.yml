@@ -42,7 +42,7 @@ jobs:
         run: npm test
       
       - name: Build package
-        run: npm run build --workspace=eslint-config-hystax-${{ steps.tag.outputs.package }}
+        run: npm run build --workspace=eslint-config-sukhov-test-${{ steps.tag.outputs.package }}
       
       - name: Verify version matches package.json
         run: |
@@ -54,6 +54,6 @@ jobs:
           echo "✅ Version matches: $PACKAGE_VERSION"
       
       - name: Publish to npm
-        run: npm publish --dry-run --workspace=eslint-config-hystax-${{ steps.tag.outputs.package }}
+        run: npm publish --dry-run --workspace=eslint-config-sukhov-test-${{ steps.tag.outputs.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.TEST_NPM_TOKEN }}
