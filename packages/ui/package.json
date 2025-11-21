@@ -21,7 +21,7 @@
     "test": "node ./test.mjs",
     "build": "rm -rf ./dist && mkdir -p ./dist && npm pack --pack-destination=./dist",
     "prepublish": "npm run test && npm run build",
-    "publish": "git push && git push --tags && npm publish",
+    "publish:local": "git push && git push --tags && npm publish",
     "publish:dry-run": "npm publish --dry-run"
   },
   "repository": {
