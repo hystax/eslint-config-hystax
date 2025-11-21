@@ -1,5 +1,5 @@
 {
-  "name": "eslint-config-hystax",
+  "name": "eslint-config-sukhov-test",
   "version": "1.0.0",
   "description": "Shared ESLint config for Hystax projects",
   "private": true,

@@ -1,5 +1,5 @@
 {
-  "name": "eslint-config-hystax-ui",
+  "name": "eslint-config-sukhov-test-ui",
   "version": "2.0.1",
   "description": "UI ESLint config for Hystax projects",
   "main": "index.mjs",
