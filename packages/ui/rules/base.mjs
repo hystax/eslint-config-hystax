@@ -25,7 +25,6 @@ export default {
   "max-params": ["warn", 3],
   "no-bitwise": "off",
   "no-console": "off",
-  "no-alert": "warn",
   "default-param-last": "off",
   "arrow-body-style": ["warn", "as-needed"],
   "no-unused-vars": "off",
