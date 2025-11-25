@@ -43,14 +43,17 @@ jobs:
       - name: Validate versioning and changelog
         if: steps.check-changes.outputs.has_changes == 'true'
         run: |
-          set -e
           PACKAGE_DIR="packages/ui"
           
           echo "::group::Version Validation"
           echo "Starting validation for package: $PACKAGE_DIR"
           
           # Get current version from package.json
-          CURRENT_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package.json').version)")
+          CURRENT_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package.json').version)") || {
+            echo "::error file=$PACKAGE_DIR/package.json::Failed to read version from package.json"
+            echo "❌ ERROR: Failed to read version from package.json"
+            exit 1
+          }
           echo "Current version in package.json: $CURRENT_VERSION"
           
           # Get base version (from base branch)
@@ -60,7 +63,7 @@ jobs:
           
           # Validate version format and check if version was increased (semantic versioning)
           echo "Validating version format and increment..."
-          set +e
+          
           VERSION_CHECK=$(node -e "
             const semver = require('semver');
             const current = '$CURRENT_VERSION';
@@ -102,7 +105,6 @@ jobs:
           " 2>&1)
           
           VERSION_CHECK_EXIT=$?
-          set -e
           
           echo "Full version check output:"
           echo "$VERSION_CHECK"
@@ -158,8 +160,16 @@ jobs:
           
           echo "::group::Package Lock Validation"
           # Verify version in package-lock.json matches package.json
-          LOCKFILE_TOP_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').version)")
-          LOCKFILE_PACKAGE_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').packages[''].version)")
+          LOCKFILE_TOP_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').version)") || {
+            echo "::error file=$PACKAGE_DIR/package-lock.json::Failed to read top-level version from package-lock.json"
+            echo "❌ ERROR: Failed to read top-level version from package-lock.json"
+            exit 1
+          }
+          LOCKFILE_PACKAGE_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package-lock.json').packages[''].version)") || {
+            echo "::error file=$PACKAGE_DIR/package-lock.json::Failed to read packages version from package-lock.json"
+            echo "❌ ERROR: Failed to read packages version from package-lock.json"
+            exit 1
+          }
           
           echo "package.json version: $CURRENT_VERSION"
           echo "package-lock.json top-level version: $LOCKFILE_TOP_VERSION"
