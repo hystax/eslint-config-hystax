@@ -116,7 +116,6 @@ jobs:
             
             if echo "$VERSION_CHECK" | grep -q "INVALID_CURRENT"; then
               echo "::error::Current version '$CURRENT_VERSION' is not a valid semantic version!"
-              echo "❌ ERROR: Current version '$CURRENT_VERSION' is not a valid semantic version!"
               echo "Please use semantic versioning format (e.g., 1.0.0, 1.0.1, 1.1.0, 2.0.0)"
               exit 1
             elif echo "$VERSION_CHECK" | grep -q "INVALID_BASE"; then
@@ -124,7 +123,6 @@ jobs:
               echo "Assuming version bump is valid (first release or manual version)"
             elif echo "$VERSION_CHECK" | grep -q "SAME_VERSION"; then
               echo "::error file=$PACKAGE_DIR/package.json::Version was not bumped!"
-              echo "❌ ERROR: Version in package.json was not bumped!"
               echo "Current version: $CURRENT_VERSION"
               echo "Base version: $BASE_VERSION"
               echo "Please bump the version in packages/ui/package.json"
@@ -134,7 +132,6 @@ jobs:
               MINOR_VER=$(echo "$VERSION_CHECK" | grep "MINOR=" | cut -d= -f2)
               MAJOR_VER=$(echo "$VERSION_CHECK" | grep "MAJOR=" | cut -d= -f2)
               echo "::error file=$PACKAGE_DIR/package.json::Version must be greater than base version!"
-              echo "❌ ERROR: Version must be greater than the base version!"
               echo "Current version: $CURRENT_VERSION"
               echo "Base version: $BASE_VERSION"
               echo "The new version must be higher according to semantic versioning rules."
@@ -145,7 +142,6 @@ jobs:
               exit 1
             else
               echo "::error::Unknown version validation error"
-              echo "❌ ERROR: Unknown version validation error"
               echo "Exit code: $VERSION_CHECK_EXIT"
               echo "Full output was:"
               echo "$VERSION_CHECK"
@@ -167,7 +163,6 @@ jobs:
           
           if [ "$LOCKFILE_TOP_VERSION" != "$CURRENT_VERSION" ]; then
             echo "::error file=$PACKAGE_DIR/package-lock.json::Version mismatch in package-lock.json (top-level)!"
-            echo "❌ ERROR: Version mismatch in package-lock.json (top-level)!"
             echo "package.json version: $CURRENT_VERSION"
             echo "package-lock.json top-level version: $LOCKFILE_TOP_VERSION"
             echo "Please update the top-level 'version' field in $PACKAGE_DIR/package-lock.json"
@@ -176,7 +171,6 @@ jobs:
           
           if [ "$LOCKFILE_PACKAGE_VERSION" != "$CURRENT_VERSION" ]; then
             echo "::error file=$PACKAGE_DIR/package-lock.json::Version mismatch in package-lock.json (packages[''])!"
-            echo "❌ ERROR: Version mismatch in package-lock.json (packages[''])!"
             echo "package.json version: $CURRENT_VERSION"
             echo "package-lock.json packages[''].version: $LOCKFILE_PACKAGE_VERSION"
             echo "Please update the packages[''].version field in $PACKAGE_DIR/package-lock.json"
@@ -194,7 +188,6 @@ jobs:
           
           if ! grep -q "^## \\[$CURRENT_VERSION\\]" "$CHANGELOG_FILE"; then
             echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION not found!"
-            echo "❌ ERROR: Changelog entry for version $CURRENT_VERSION not found!"
             echo "Please add a changelog entry in $CHANGELOG_FILE with the format:"
             echo "## [$CURRENT_VERSION] - YYYY-MM-DD"
             exit 1
@@ -204,12 +197,6 @@ jobs:
           
           # Verify changelog entry is not empty (has content after the version header)
           CHANGELOG_LINE=$(grep -n "^## \\[$CURRENT_VERSION\\]" "$CHANGELOG_FILE" | cut -d: -f1)
-          if [ -z "$CHANGELOG_LINE" ]; then
-            echo "::error file=$CHANGELOG_FILE::Could not find changelog entry line"
-            echo "❌ ERROR: Could not find changelog entry line"
-            exit 1
-          fi
-          
           echo "Changelog entry found at line: $CHANGELOG_LINE"
           
           # Check if there's content after the version header (skip empty entries)
@@ -219,7 +206,6 @@ jobs:
             LINES_AFTER_HEADER=$(tail -n +$((CHANGELOG_LINE + 1)) "$CHANGELOG_FILE" | grep -v '^$' | head -1)
             if [ -z "$LINES_AFTER_HEADER" ]; then
               echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION is empty!"
-              echo "❌ ERROR: Changelog entry for version $CURRENT_VERSION is empty!"
               echo "Please add at least one change entry (Added, Changed, Fixed, etc.)"
               exit 1
             fi
@@ -228,7 +214,6 @@ jobs:
             LINES_BETWEEN=$(sed -n "$((CHANGELOG_LINE + 1)),$((CHANGELOG_LINE + NEXT_VERSION_LINE - 1))p" "$CHANGELOG_FILE" | grep -v '^$' | head -1)
             if [ -z "$LINES_BETWEEN" ]; then
               echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION is empty!"
-              echo "❌ ERROR: Changelog entry for version $CURRENT_VERSION is empty!"
               echo "Please add at least one change entry (Added, Changed, Fixed, etc.)"
               exit 1
             fi
