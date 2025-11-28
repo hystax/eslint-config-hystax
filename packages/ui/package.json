@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-sukhov-test-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "UI ESLint config for Hystax projects",
   "main": "index.mjs",
   "type": "module",
