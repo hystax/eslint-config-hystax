@@ -8,8 +8,8 @@
     "build": "pnpm run build --filter eslint-config-sukhov-test-ui",
     "test": "pnpm run test --filter eslint-config-sukhov-test-ui",
     "preinstall": "npx only-allow pnpm",
-    "release:ui": "pnpm run release --filter eslint-config-sukhov-test-ui",
-    "release:ui:dry-run": "pnpm run release:dry-run --filter eslint-config-sukhov-test-ui"
+    "release:ui": "pnpm --filter eslint-config-sukhov-test-ui run release",
+    "release:ui:dry-run": "pnpm --filter eslint-config-sukhov-test-ui run release:dry-run"
   },
   "repository": {
     "type": "git",
