@@ -5,8 +5,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "pnpm run build --filter eslint-config-sukhov-test-ui",
-    "test": "pnpm run test --filter eslint-config-sukhov-test-ui",
+    "build": "pnpm --filter eslint-config-sukhov-test-ui run build",
+    "test": "pnpm --filter eslint-config-sukhov-test-ui run test",
     "preinstall": "npx only-allow pnpm",
     "release:ui": "pnpm --filter eslint-config-sukhov-test-ui run release",
     "release:ui:dry-run": "pnpm --filter eslint-config-sukhov-test-ui run release:dry-run"

@@ -3,6 +3,8 @@ name: Validate Versioning and Changelog
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches:
+      - main
     paths:
       - 'packages/ui/**'
 
