@@ -19,10 +19,10 @@
   ],
   "scripts": {
     "test": "node ./test.mjs",
-    "build": "rm -rf ./dist && mkdir -p ./dist && npm pack --pack-destination=./dist",
-    "prepublish": "npm run test && npm run build",
-    "publish": "git push && git push --tags && npm publish",
-    "publish:dry-run": "npm publish --dry-run"
+    "build": "rm -rf ./dist && mkdir -p ./dist && pnpm pack --pack-destination=./dist",
+    "prepublishOnly": "pnpm run test && pnpm run build",
+    "release": "git push && git push --tags && pnpm publish",
+    "release:dry-run": "pnpm publish --dry-run"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "eslint": "^9.34.0"
   },
   "dependencies": {
+    "@eslint/js": "^9.0.0",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-prettier": "^5.2.1",
@@ -46,6 +47,7 @@
     "@typescript-eslint/parser": "^8.41.0",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "prettier": "^3.3.3",
-    "eslint-config-prettier": "^9.1.0"
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.0.0"
   }
 }
