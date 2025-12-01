@@ -1,21 +1,20 @@
 {
-  "name": "eslint-config-hystax",
-  "version": "1.0.0",
-  "description": "Shared ESLint config for Hystax projects",
+  "name": "eslint-config-sukhov-test",
   "private": true,
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
-  "workspaces": ["packages/*"],
   "scripts": {
-    "build": "npm run build --workspace=eslint-config-hystax-ui",
-    "test": "npm run test --workspace=eslint-config-hystax-ui"
+    "build": "pnpm --filter eslint-config-sukhov-test-ui run build",
+    "test": "pnpm --filter eslint-config-sukhov-test-ui run test",
+    "preinstall": "npx only-allow pnpm",
+    "release:ui": "pnpm --filter eslint-config-sukhov-test-ui run release",
+    "release:ui:dry-run": "pnpm --filter eslint-config-sukhov-test-ui run release:dry-run"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hystax/eslint-config-hystax.git"
   },
-  "type": "module",
   "author": "Hystax (https://hystax.com)",
   "license": "Apache-2.0",
   "bugs": {
