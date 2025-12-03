@@ -6,7 +6,7 @@ This package provides a shared ESLint configuration used across Hystax repositor
 
 ## ⚙️ Requirements
 
-- Node.js: ≥ 18
+- Node.js: ≥ 20
 - ESLint: ≥ 9
 
 ## 🚀 Installation
