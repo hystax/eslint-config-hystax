@@ -2,7 +2,7 @@
   "name": "eslint-config-hystax",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "build": "pnpm --filter eslint-config-hystax-ui run build",
