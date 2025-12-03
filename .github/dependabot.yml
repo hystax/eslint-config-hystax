@@ -10,6 +10,7 @@ updates:
       - DoRightt
       - ek-hystax
       - ka-hystax
+      - v-hx
 
   - package-ecosystem: github-actions
     directory: /
@@ -19,3 +20,4 @@ updates:
       - DoRightt
       - ek-hystax
       - ka-hystax
+      - v-hx
