@@ -9,6 +9,8 @@ updates:
     assignees:
       - DoRightt
       - ek-hystax
+      - ka-hystax
+      - v-hx
 
   - package-ecosystem: github-actions
     directory: /
@@ -17,3 +19,5 @@ updates:
     assignees:
       - DoRightt
       - ek-hystax
+      - ka-hystax
+      - v-hx

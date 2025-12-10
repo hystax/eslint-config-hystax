@@ -18,7 +18,8 @@ export default {
     "**/dist/**",
     "**/build/**",
     "**/.next/**",
-    "**/stories/**"
+    "**/stories/**",
+    "**/*.stories.*"
   ],
   
   files: ["src/**/*.{ts,tsx}"],
