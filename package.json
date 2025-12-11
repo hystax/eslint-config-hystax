@@ -1,0 +1,24 @@
+{
+  "name": "eslint-config-hystax",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm --filter eslint-config-hystax-ui run build",
+    "test": "pnpm --filter eslint-config-hystax-ui run test",
+    "preinstall": "npx only-allow pnpm",
+    "release:ui": "pnpm --filter eslint-config-hystax-ui run release",
+    "release:ui:dry-run": "pnpm --filter eslint-config-hystax-ui run release:dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hystax/eslint-config-hystax.git"
+  },
+  "author": "Hystax (https://hystax.com)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hystax/eslint-config-hystax/issues"
+  },
+  "homepage": "https://github.com/hystax/eslint-config-hystax#readme"
+}

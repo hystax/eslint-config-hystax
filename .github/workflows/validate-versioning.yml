@@ -1,0 +1,204 @@
+name: Validate Versioning and Changelog
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    paths:
+      - 'packages/ui/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install semver package
+        run: pnpm add semver
+
+      - name: Check for changes in package
+        id: check-changes
+        run: |
+          # Check for changes in package files (excluding dist, node_modules)
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "^packages/ui/" | grep -v "^packages/ui/dist/" | grep -v "^packages/ui/node_modules/" || true)
+          
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Package files have been modified:"
+            echo "$CHANGED_FILES"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No relevant package files modified (excluding dist, node_modules)"
+          fi
+
+      - name: Validate versioning and changelog
+        if: steps.check-changes.outputs.has_changes == 'true'
+        run: |
+          set -e
+          PACKAGE_DIR="packages/ui"
+          
+          echo "::group::Version Validation"
+          echo "Starting validation for package: $PACKAGE_DIR"
+          
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -e "console.log(require('./$PACKAGE_DIR/package.json').version)")
+          echo "Current version in package.json: $CURRENT_VERSION"
+          
+          # Get base version (from base branch)
+          git fetch origin ${{ github.base_ref }} --depth=1 || true
+          BASE_VERSION=$(git show origin/${{ github.base_ref }}:$PACKAGE_DIR/package.json 2>/dev/null | node -e "const fs=require('fs'); const data=fs.readFileSync(0,'utf-8'); console.log(JSON.parse(data).version)" || echo "0.0.0")
+          echo "Base version in package.json: $BASE_VERSION"
+          
+          # Validate version format and check if version was increased (semantic versioning)
+          echo "Validating version format and increment..."
+          set +e
+          VERSION_CHECK=$(node -e "
+            const semver = require('semver');
+            const current = '$CURRENT_VERSION';
+            const base = '$BASE_VERSION';
+            
+            // Validate current version format
+            if (!semver.valid(current)) {
+              console.error('INVALID_CURRENT');
+              process.exit(1);
+            }
+            
+            // Validate base version format (if not 0.0.0)
+            if (base !== '0.0.0' && !semver.valid(base)) {
+              console.error('INVALID_BASE');
+              process.exit(1);
+            }
+            
+            // Check if versions are the same
+            if (current === base) {
+              console.error('SAME_VERSION');
+              process.exit(1);
+            }
+            
+            // Check if current version is greater than base version
+            if (!semver.gt(current, base)) {
+              console.error('VERSION_NOT_INCREASED');
+              process.exit(1);
+            }
+            
+            // Calculate suggested versions
+            const patch = semver.inc(base, 'patch');
+            const minor = semver.inc(base, 'minor');
+            const major = semver.inc(base, 'major');
+            
+            console.log('OK');
+            console.log('PATCH=' + patch);
+            console.log('MINOR=' + minor);
+            console.log('MAJOR=' + major);
+          " 2>&1)
+          
+          VERSION_CHECK_EXIT=$?
+          set -e
+          
+          echo "Full version check output:"
+          echo "$VERSION_CHECK"
+          
+          VERSION_CHECK_OUTPUT=$(echo "$VERSION_CHECK" | head -1 | tr -d '\r\n')
+          echo "First line of output: '$VERSION_CHECK_OUTPUT'"
+          echo "Exit code: $VERSION_CHECK_EXIT"
+          
+          if [ $VERSION_CHECK_EXIT -ne 0 ]; then
+            echo "::error file=$PACKAGE_DIR/package.json::Version validation failed"
+            
+            if echo "$VERSION_CHECK" | grep -q "INVALID_CURRENT"; then
+              echo "::error::Current version '$CURRENT_VERSION' is not a valid semantic version!"
+              echo "Please use semantic versioning format (e.g., 1.0.0, 1.0.1, 1.1.0, 2.0.0)"
+              exit 1
+            elif echo "$VERSION_CHECK" | grep -q "INVALID_BASE"; then
+              echo "⚠️  WARNING: Base version '$BASE_VERSION' is not a valid semantic version"
+              echo "Assuming version bump is valid (first release or manual version)"
+            elif echo "$VERSION_CHECK" | grep -q "SAME_VERSION"; then
+              echo "::error file=$PACKAGE_DIR/package.json::Version was not bumped!"
+              echo "Current version: $CURRENT_VERSION"
+              echo "Base version: $BASE_VERSION"
+              echo "Please bump the version in packages/ui/package.json"
+              exit 1
+            elif echo "$VERSION_CHECK" | grep -q "VERSION_NOT_INCREASED"; then
+              PATCH_VER=$(echo "$VERSION_CHECK" | grep "PATCH=" | cut -d= -f2)
+              MINOR_VER=$(echo "$VERSION_CHECK" | grep "MINOR=" | cut -d= -f2)
+              MAJOR_VER=$(echo "$VERSION_CHECK" | grep "MAJOR=" | cut -d= -f2)
+              echo "::error file=$PACKAGE_DIR/package.json::Version must be greater than base version!"
+              echo "Current version: $CURRENT_VERSION"
+              echo "Base version: $BASE_VERSION"
+              echo "The new version must be higher according to semantic versioning rules."
+              echo "Suggested versions:"
+              echo "  - Patch: $BASE_VERSION -> $PATCH_VER"
+              echo "  - Minor: $BASE_VERSION -> $MINOR_VER"
+              echo "  - Major: $BASE_VERSION -> $MAJOR_VER"
+              exit 1
+            else
+              echo "::error::Unknown version validation error"
+              echo "Exit code: $VERSION_CHECK_EXIT"
+              echo "Full output was:"
+              echo "$VERSION_CHECK"
+              exit 1
+            fi
+          else
+            echo "✅ Version was bumped from $BASE_VERSION to $CURRENT_VERSION (valid semver increment)"
+          fi
+          echo "::endgroup::"
+          
+          echo "::group::Changelog Validation"
+          # Check if changelog has entry for this version
+          CHANGELOG_FILE="$PACKAGE_DIR/CHANGELOG.md"
+          echo "Checking changelog file: $CHANGELOG_FILE"
+          echo "Looking for version: $CURRENT_VERSION"
+          
+          if ! grep -q "^## \\[$CURRENT_VERSION\\]" "$CHANGELOG_FILE"; then
+            echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION not found!"
+            echo "Please add a changelog entry in $CHANGELOG_FILE with the format:"
+            echo "## [$CURRENT_VERSION] - YYYY-MM-DD"
+            exit 1
+          fi
+          
+          echo "✅ Changelog entry found for version $CURRENT_VERSION"
+          
+          # Verify changelog entry is not empty (has content after the version header)
+          CHANGELOG_LINE=$(grep -n "^## \\[$CURRENT_VERSION\\]" "$CHANGELOG_FILE" | cut -d: -f1)
+          echo "Changelog entry found at line: $CHANGELOG_LINE"
+          
+          # Check if there's content after the version header (skip empty entries)
+          NEXT_VERSION_LINE=$(tail -n +$((CHANGELOG_LINE + 1)) "$CHANGELOG_FILE" | grep -n "^## \\[" | head -1 | cut -d: -f1)
+          if [ -z "$NEXT_VERSION_LINE" ]; then
+            # This is the latest version, check if there's any content after the header
+            LINES_AFTER_HEADER=$(tail -n +$((CHANGELOG_LINE + 1)) "$CHANGELOG_FILE" | grep -v '^$' | head -1)
+            if [ -z "$LINES_AFTER_HEADER" ]; then
+              echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION is empty!"
+              echo "Please add at least one change entry (Added, Changed, Fixed, etc.)"
+              exit 1
+            fi
+          else
+            # Check if there's content between this version and the next
+            LINES_BETWEEN=$(sed -n "$((CHANGELOG_LINE + 1)),$((CHANGELOG_LINE + NEXT_VERSION_LINE - 1))p" "$CHANGELOG_FILE" | grep -v '^$' | head -1)
+            if [ -z "$LINES_BETWEEN" ]; then
+              echo "::error file=$CHANGELOG_FILE::Changelog entry for version $CURRENT_VERSION is empty!"
+              echo "Please add at least one change entry (Added, Changed, Fixed, etc.)"
+              exit 1
+            fi
+          fi
+          
+          echo "✅ Changelog entry for version $CURRENT_VERSION has content"
+          echo "::endgroup::"
+          
+          echo "::notice::All validations passed successfully!"
+          

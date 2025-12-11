@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    versioning-strategy: increase
+    assignees:
+      - DoRightt
+      - ek-hystax
+      - ka-hystax
+      - v-hx
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    assignees:
+      - DoRightt
+      - ek-hystax
+      - ka-hystax
+      - v-hx
