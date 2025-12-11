@@ -1,4 +1,4 @@
-# 📦 eslint-config-hystax
+# 📦 @hystax/eslint-config
 
 Shared ESLint configurations for **Hystax** projects.
 
@@ -9,9 +9,9 @@ The goal is to provide consistent linting rules across all Hystax projects.
 
 | Package                                       | Description                                                     |
 |-----------------------------------------------|-----------------------------------------------------------------|
-| [`eslint-config-hystax-ui`](./packages/ui)    | Shared ESLint config for **frontend/React/TypeScript** projects |
-| *(coming soon)* `eslint-config-hystax-server` | ESLint config for **Node.js / backend** projects                |
-| *(coming soon)* `eslint-config-hystax-base`   | Base rules for all Hystax projects                              |
+| [`@hystax/eslint-config-ui`](./packages/ui)    | Shared ESLint config for **frontend/React/TypeScript** projects |
+| *(coming soon)* `@hystax/eslint-config-server` | ESLint config for **Node.js / backend** projects                |
+| *(coming soon)* `@hystax/eslint-config-base`   | Base rules for all Hystax projects                              |
 
 > Each package can be installed and used independently.
 
@@ -20,10 +20,10 @@ The goal is to provide consistent linting rules across all Hystax projects.
 Install the desired package in your project:
 
 ```bash
-npm install -D eslint-config-hystax-ui
+npm install -D @hystax/eslint-config-ui
 ```
 
-For details on usage, overriding rules, or customizing file globs, see the [`eslint-config-hystax-ui` README](./packages/ui/README.md).
+For details on usage, overriding rules, or customizing file globs, see the [`@hystax/eslint-config-ui` README](./packages/ui/README.md).
 
 ## 🧪 Development & Testing
 
@@ -36,7 +36,7 @@ npm test
 
 #### Run tests for a specific package
 ```bash
-npm run test --workspace=eslint-config-hystax-ui
+npm run test --workspace=@hystax/eslint-config-ui
 ```
 
 ## 📄 License

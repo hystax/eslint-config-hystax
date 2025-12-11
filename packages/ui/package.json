@@ -1,9 +1,12 @@
 {
-  "name": "eslint-config-hystax-ui",
+  "name": "@hystax/eslint-config-ui",
   "version": "1.0.0",
   "description": "UI ESLint config for Hystax projects",
   "main": "index.mjs",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "Apache-2.0",
   "files": [
     "index.mjs",
