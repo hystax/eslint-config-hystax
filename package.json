@@ -1,15 +1,15 @@
 {
-  "name": "eslint-config-hystax",
+  "name": "@hystax/eslint-config",
   "private": true,
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "pnpm --filter eslint-config-hystax-ui run build",
-    "test": "pnpm --filter eslint-config-hystax-ui run test",
+    "build": "pnpm --filter @hystax/eslint-config-ui run build",
+    "test": "pnpm --filter @hystax/eslint-config-ui run test",
     "preinstall": "npx only-allow pnpm",
-    "release:ui": "pnpm --filter eslint-config-hystax-ui run release",
-    "release:ui:dry-run": "pnpm --filter eslint-config-hystax-ui run release:dry-run"
+    "release:ui": "pnpm --filter @hystax/eslint-config-ui run release",
+    "release:ui:dry-run": "pnpm --filter @hystax/eslint-config-ui run release:dry-run"
   },
   "repository": {
     "type": "git",

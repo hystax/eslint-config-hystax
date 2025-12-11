@@ -1,4 +1,4 @@
-# 📦 eslint-config-hystax-ui
+# 📦 @hystax/eslint-config-ui
 
 Shared **UI** ESLint configuration for **Hystax** projects
 
@@ -12,7 +12,7 @@ This package provides a shared ESLint configuration used across Hystax repositor
 ## 🚀 Installation
 
 ```bash
-npm install -D eslint-config-hystax-ui
+npm install -D @hystax/eslint-config-ui
 ```
 
 ## ⚙️ Usage
@@ -21,20 +21,20 @@ In your project’s _eslint.config.mjs_, import and use the shared configuration
 
 Basic example (UI project)
 ```javascript
-import config from "eslint-config-hystax-ui";
+import config from "@hystax/eslint-config-ui";
 export default config;
 ```
 
 You can also use an array form if you plan to combine multiple configs:
 
 ```javascript
-import config from "eslint-config-hystax-ui";
+import config from "@hystax/eslint-config-ui";
 export default [config];
 ```
 
 ### 🧩 Override file globs or rules
 ```javascript
-import config from "eslint-config-hystax-ui";
+import config from "@hystax/eslint-config-ui";
 export default [
   {
     ...config,
