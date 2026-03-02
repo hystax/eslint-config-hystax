@@ -4,7 +4,6 @@ import eslintPluginPrettier from "eslint-plugin-prettier";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 import typescriptParser from "@typescript-eslint/parser";
-import graphqlPlugin from "@graphql-eslint/eslint-plugin";
 import globals from "globals";
 
 import baseRules from "./rules/base.mjs";
@@ -26,7 +25,6 @@ export default [
   {
     files: ["**/*.ts"],
     ignores: ["**/graphql/__generated__/**"],
-    processor: graphqlPlugin.processor,
 
     plugins: {
       node: nodePlugin,
