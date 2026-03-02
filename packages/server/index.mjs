@@ -11,58 +11,47 @@ import nodeRules from "./rules/node.mjs";
 import importsRules from "./rules/imports.mjs";
 import prettierRules from "./rules/prettier.mjs";
 
-export default [
-  {
-    ignores: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/build/**",
-      "**/.next/**",
-      "**/graphql/__generated__/**",
-      "**/graphql/typeDefs/root.ts",
-    ],
+export default {
+  ignores: ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**"],
+
+  files: ["**/*.ts"],
+
+  plugins: {
+    node: nodePlugin,
+    import: eslintPluginImport,
+    "unused-imports": unusedImportsPlugin,
+    "@typescript-eslint": typescriptPlugin,
+    prettier: eslintPluginPrettier,
   },
-  {
-    files: ["**/*.ts"],
-    ignores: ["**/graphql/__generated__/**"],
 
-    plugins: {
-      node: nodePlugin,
-      import: eslintPluginImport,
-      "unused-imports": unusedImportsPlugin,
-      "@typescript-eslint": typescriptPlugin,
-      prettier: eslintPluginPrettier,
+  languageOptions: {
+    parser: typescriptParser,
+    parserOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
     },
+    globals: {
+      ...globals.node,
+      ...globals.builtin,
+      ...globals.jest,
+      vi: true,
+    },
+  },
 
-    languageOptions: {
-      parser: typescriptParser,
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      },
-      globals: {
-        ...globals.node,
-        ...globals.builtin,
-        ...globals.jest,
-        vi: true,
+  settings: {
+    "import/resolver": {
+      node: {
+        extensions: [".js", ".cjs", ".mjs", ".ts"],
+        moduleDirectory: ["node_modules", "src/"],
       },
     },
+    "import/ignore": ["node_modules"],
+  },
 
-    settings: {
-      "import/resolver": {
-        node: {
-          extensions: [".js", ".cjs", ".mjs", ".ts"],
-          moduleDirectory: ["node_modules", "src/"],
-        },
-      },
-      "import/ignore": ["node_modules"],
-    },
-
-    rules: {
-      ...baseRules,
-      ...nodeRules,
-      ...importsRules,
-      ...prettierRules,
-    },
-  }
-];
+  rules: {
+    ...baseRules,
+    ...nodeRules,
+    ...importsRules,
+    ...prettierRules,
+  },
+};
