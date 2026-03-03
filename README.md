@@ -10,7 +10,7 @@ The goal is to provide consistent linting rules across all Hystax projects.
 | Package                                       | Description                                                     |
 |-----------------------------------------------|-----------------------------------------------------------------|
 | [`@hystax/eslint-config-ui`](./packages/ui)    | Shared ESLint config for **frontend/React/TypeScript** projects |
-| *(coming soon)* `@hystax/eslint-config-server` | ESLint config for **Node.js / backend** projects                |
+| [`@hystax/eslint-config-server`](./packages/server)  | ESLint config for **Node.js / backend** projects                |
 | *(coming soon)* `@hystax/eslint-config-base`   | Base rules for all Hystax projects                              |
 
 > Each package can be installed and used independently.
