@@ -1,0 +1,90 @@
+name: Create Git Tags
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-tags:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Detect changed packages dynamically
+        id: changes
+        run: |
+          echo "Detecting changed packages..."
+
+          # get all packages in the packages/ directory
+          ALL_PACKAGES=$(ls packages | grep -v '^$')
+          echo "All packages: $ALL_PACKAGES"
+
+          # detect which packages changed in the last commit
+          CHANGED_PACKAGES=$(git diff --name-only HEAD~1 HEAD | grep "^packages/" | cut -d/ -f2 | sort -u)
+          echo "Changed packages: $CHANGED_PACKAGES"
+
+          # use only changed packages that actually exist
+          PACKAGES=""
+          for pkg in $CHANGED_PACKAGES; do
+            if echo "$ALL_PACKAGES" | grep -qw "$pkg"; then
+              PACKAGES="$PACKAGES $pkg"
+            fi
+          done
+
+          echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
+          echo "Packages to process: $PACKAGES"
+
+      - name: Create tags
+        if: env.PACKAGES != ''
+        run: |
+          set -e
+          read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
+
+          for PACKAGE in "${PACKAGE_ARRAY[@]}"; do
+            PACKAGE_DIR="packages/$PACKAGE"
+
+            echo "-----------------------------"
+            echo "Processing $PACKAGE"
+
+            CURRENT_VERSION=$(node -p "require('./$PACKAGE_DIR/package.json').version")
+
+            BASE_VERSION=$(git show HEAD~1:$PACKAGE_DIR/package.json 2>/dev/null | node -e "
+              const fs = require('fs');
+              const data = fs.readFileSync(0, 'utf-8');
+              console.log(JSON.parse(data).version);
+            " || echo "")
+
+            echo "Current version: $CURRENT_VERSION"
+            echo "Base version: $BASE_VERSION"
+
+            # check that the version has changed
+            if [ "$CURRENT_VERSION" = "$BASE_VERSION" ]; then
+              echo "::error file=$PACKAGE_DIR/package.json::Version was not updated for $PACKAGE"
+              echo "You modified the package but did not bump the version."
+              exit 1
+            fi
+
+            TAG_NAME="packages/$PACKAGE/v$CURRENT_VERSION"
+
+            # create git tag if it does not exist
+            if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+              echo "⏭ Tag already exists: $TAG_NAME"
+            else
+              echo "🏷 Creating tag: $TAG_NAME"
+              git tag $TAG_NAME
+              git push origin $TAG_NAME
+            fi
+          done
