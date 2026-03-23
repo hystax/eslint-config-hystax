@@ -28,6 +28,7 @@ jobs:
         run: |
           corepack enable
           corepack prepare pnpm@10 --activate
+          pnpm --version
 
       - name: Install semver package
         run: pnpm add semver
