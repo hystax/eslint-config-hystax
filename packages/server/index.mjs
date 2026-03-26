@@ -11,47 +11,63 @@ import nodeRules from "./rules/node.mjs";
 import importsRules from "./rules/imports.mjs";
 import prettierRules from "./rules/prettier.mjs";
 
-export default {
-  ignores: ["**/node_modules/**", "**/dist/**", "**/build/**", "**/.next/**"],
-
-  files: ["**/*.ts"],
-
-  plugins: {
-    node: nodePlugin,
-    import: eslintPluginImport,
-    "unused-imports": unusedImportsPlugin,
-    "@typescript-eslint": typescriptPlugin,
-    prettier: eslintPluginPrettier,
+export default [
+  {
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/.next/**",
+      "**/.out/**",
+      "**/.turbo/**",
+      "**/.cache/**",
+      "**/.parcel-cache/**",
+      "**/.vite/**",
+      "**/coverage/**",
+      "**/tmp/**",
+      "**/temp/**",
+    ],
   },
+  {
+    files: ["**/*.ts"],
 
-  languageOptions: {
-    parser: typescriptParser,
-    parserOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
+    plugins: {
+      node: nodePlugin,
+      import: eslintPluginImport,
+      "unused-imports": unusedImportsPlugin,
+      "@typescript-eslint": typescriptPlugin,
+      prettier: eslintPluginPrettier,
     },
-    globals: {
-      ...globals.node,
-      ...globals.builtin,
-      ...globals.jest,
-      vi: true,
-    },
-  },
 
-  settings: {
-    "import/resolver": {
-      node: {
-        extensions: [".js", ".cjs", ".mjs", ".ts"],
-        moduleDirectory: ["node_modules", "src/"],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+      globals: {
+        ...globals.node,
+        ...globals.builtin,
+        ...globals.jest,
+        vi: true,
       },
     },
-    "import/ignore": ["node_modules"],
-  },
 
-  rules: {
-    ...baseRules,
-    ...nodeRules,
-    ...importsRules,
-    ...prettierRules,
+    settings: {
+      "import/resolver": {
+        node: {
+          extensions: [".js", ".cjs", ".mjs", ".ts"],
+          moduleDirectory: ["node_modules", "src/"],
+        },
+      },
+      "import/ignore": ["node_modules"],
+    },
+
+    rules: {
+      ...baseRules,
+      ...nodeRules,
+      ...importsRules,
+      ...prettierRules,
+    },
   },
-};
+];

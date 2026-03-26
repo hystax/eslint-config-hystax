@@ -1,6 +1,6 @@
 {
   "name": "@hystax/eslint-config-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Server ESLint config for Hystax projects",
   "main": "index.mjs",
   "type": "module",
