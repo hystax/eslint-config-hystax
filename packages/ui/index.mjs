@@ -12,60 +12,70 @@ import reactRules from "./rules/react.mjs";
 import importsRules from "./rules/imports.mjs";
 import prettierRules from "./rules/prettier.mjs";
 
-export default {
-  ignores: [
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/.next/**",
-    "**/stories/**",
-    "**/*.stories.*"
-  ],
-  
-  files: ["src/**/*.{ts,tsx}"],
-
-  plugins: {
-    react: reactPlugin,
-    "react-hooks": reactHooksPlugin,
-    "@typescript-eslint": typescriptPlugin,
-    import: eslintPluginImport,
-    "unused-imports": unusedImportsPlugin,
-    prettier: eslintPluginPrettier
+export default [
+  {
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/.next/**",
+      "**/.out/**",
+      "**/.turbo/**",
+      "**/.cache/**",
+      "**/.parcel-cache/**",
+      "**/.vite/**",
+      "**/coverage/**",
+      "**/tmp/**",
+      "**/temp/**",
+      "**/stories/**",
+      "**/*.stories.*",
+    ],
   },
+  {
+    files: ["src/**/*.{ts,tsx}"],
 
-  languageOptions: {
-    parser: tsParser,
-    parserOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
-      ecmaFeatures: {
-        jsx: true,
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": reactHooksPlugin,
+      "@typescript-eslint": typescriptPlugin,
+      import: eslintPluginImport,
+      "unused-imports": unusedImportsPlugin,
+      prettier: eslintPluginPrettier,
+    },
+
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.builtin,
+        ...globals.jest,
+        vi: true,
       },
     },
-    globals: {
-      ...globals.browser,
-      ...globals.builtin,
-      ...globals.jest,
-      vi: true
-    }
-  },
 
-  settings: {
-    react: { version: "detect" },
-    "import/resolver": {
-      node: {
-        extensions: [".js", ".jsx", ".ts", ".tsx"],
-        moduleDirectory: ["node_modules", "src/"]
+    settings: {
+      react: { version: "detect" },
+      "import/resolver": {
+        node: {
+          extensions: [".js", ".jsx", ".ts", ".tsx"],
+          moduleDirectory: ["node_modules", "src/"],
+        },
       },
+      "import/ignore": ["node_modules"],
     },
-    "import/ignore": ["node_modules"]
+
+    rules: {
+      ...baseRules,
+      ...reactRules,
+      ...importsRules,
+      ...prettierRules,
+    },
   },
-
-  rules: {
-    ...baseRules,
-    ...reactRules,
-    ...importsRules,
-    ...prettierRules,
-  }
-};
-
+];

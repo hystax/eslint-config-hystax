@@ -21,4 +21,5 @@ export default {
     "react/display-name": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
+    "react/jsx-curly-brace-presence": ["error", { props: "never", children: "never" }]
   }
