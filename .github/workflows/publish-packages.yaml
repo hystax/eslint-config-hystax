@@ -28,6 +28,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Configure npm auth
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
