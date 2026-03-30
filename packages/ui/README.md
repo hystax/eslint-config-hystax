@@ -20,30 +20,48 @@ npm install -D @hystax/eslint-config-ui
 In your project’s _eslint.config.mjs_, import and use the shared configuration.
 
 Basic example (UI project)
+
 ```javascript
 import config from "@hystax/eslint-config-ui";
+
+// The config is an array; the first element contains global ignore
 export default config;
 ```
 
-You can also use an array form if you plan to combine multiple configs:
+### 🧩 Combining with other configs or local overrides
 
-```javascript
-import config from "@hystax/eslint-config-ui";
-export default [config];
-```
-
-### 🧩 Override file globs or rules
 ```javascript
 import config from "@hystax/eslint-config-ui";
 export default [
+  ...config,
   {
-    ...config,
-    files: ["src/**/*.{ts,tsx}"],
+    // Add or override rules here
     rules: {
-      ...config.rules,
-      "no-console": "warn"
-    }
-  }
+      "no-console": "warn",
+      "import/order": [
+        "error",
+        { groups: ["builtin", "external", "internal"] },
+      ],
+    },
+  },
+];
+```
+
+### 🧩 Add or override global ignores
+
+```javascript
+import config from "@hystax/eslint-config-ui";
+
+const globalIgnores = config[0];
+const configRules = config.slice(1);
+
+export default [
+  {
+    // Extend existing global ignores or override them
+    ...globalIgnores,
+    ignores: [...(globalIgnores.ignores || []), "./dist"],
+  },
+  ...configRules,
 ];
 ```
 
@@ -54,6 +72,8 @@ export default [
 - Works with React, TypeScript, and Prettier.
 
 - Designed for consistency across all Hystax frontend projects.
+
+- The first element of the exported array contains global ignores, so it’s important to spread the array if adding additional rules.
 
 ## 📄 License
 
