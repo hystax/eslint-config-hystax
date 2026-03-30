@@ -1,0 +1,62 @@
+name: Publish Packages
+
+# Starts after successful workflow Create Git Tags
+on:
+  workflow_run:
+    workflows: ["Create Git Tags"]
+    types:
+      - completed
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: "10"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Configure npm auth
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Detect changed packages dynamically
+        id: changes
+        run: |
+          echo "Detecting changed packages..."
+          ALL_PACKAGES=$(ls packages | grep -v '^$')
+          CHANGED_PACKAGES=$(git diff --name-only HEAD~1 HEAD | grep "^packages/" | cut -d/ -f2 | sort -u)
+          PACKAGES=""
+          for pkg in $CHANGED_PACKAGES; do
+            if echo "$ALL_PACKAGES" | grep -qw "$pkg"; then
+              PACKAGES="$PACKAGES $pkg"
+            fi
+          done
+          echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
+          echo "Packages to publish: $PACKAGES"
+
+      - name: Publish packages
+        if: env.PACKAGES != ''
+        run: |
+          set -e
+          read -r -a PACKAGE_ARRAY <<< "$PACKAGES"
+
+          for PACKAGE in "${PACKAGE_ARRAY[@]}"; do
+            PACKAGE_DIR="packages/$PACKAGE"
+            echo "-----------------------------"
+            echo "Publishing $PACKAGE"
+
+            pnpm publish "$PACKAGE_DIR" --access public
+          done
