@@ -1,6 +1,6 @@
 {
   "name": "@hystax/eslint-config-ui",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "UI ESLint config for Hystax projects",
   "main": "index.mjs",
   "type": "module",
@@ -42,15 +42,16 @@
   },
   "dependencies": {
     "@eslint/js": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-unused-imports": "^4.1.4",
-    "@typescript-eslint/parser": "^8.41.0",
-    "@typescript-eslint/eslint-plugin": "^8.41.0",
-    "prettier": "^3.3.3",
-    "eslint-config-prettier": "^9.1.0",
-    "globals": "^15.0.0"
+    "globals": "^15.0.0",
+    "prettier": "^3.3.3"
   }
 }

@@ -63,6 +63,7 @@ export default [
     settings: {
       react: { version: "detect" },
       "import/resolver": {
+        typescript: true,
         node: {
           extensions: [".js", ".jsx", ".ts", ".tsx"],
           moduleDirectory: ["node_modules", "src/"],

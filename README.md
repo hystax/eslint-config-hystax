@@ -7,11 +7,11 @@ The goal is to provide consistent linting rules across all Hystax projects.
 
 ## 🧱 Packages
 
-| Package                                       | Description                                                     |
-|-----------------------------------------------|-----------------------------------------------------------------|
-| [`@hystax/eslint-config-ui`](./packages/ui)    | Shared ESLint config for **frontend/React/TypeScript** projects |
-| [`@hystax/eslint-config-server`](./packages/server)  | ESLint config for **Node.js / backend** projects                |
-| *(coming soon)* `@hystax/eslint-config-base`   | Base rules for all Hystax projects                              |
+| Package                                             | Description                                                     |
+| --------------------------------------------------- | --------------------------------------------------------------- |
+| [`@hystax/eslint-config-ui`](./packages/ui)         | Shared ESLint config for **frontend/React/TypeScript** projects |
+| [`@hystax/eslint-config-server`](./packages/server) | ESLint config for **Node.js / backend** projects                |
+| _(coming soon)_ `@hystax/eslint-config-base`        | Base rules for all Hystax projects                              |
 
 > Each package can be installed and used independently.
 
@@ -30,11 +30,13 @@ For details on usage, overriding rules, or customizing file globs, see the [`@hy
 These commands are for contributors and maintainers to verify that all ESLint configs load correctly:
 
 #### Run tests for all packages
+
 ```bash
 npm test
 ```
 
 #### Run tests for a specific package
+
 ```bash
 npm run test --workspace=@hystax/eslint-config-ui
 ```
