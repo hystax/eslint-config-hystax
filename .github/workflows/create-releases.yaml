@@ -1,0 +1,108 @@
+name: Create GitHub Releases
+
+on:
+  push:
+    tags:
+      - "packages/*/v*"
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Extract package and version from tag
+        run: |
+          FULL_TAG="${GITHUB_REF#refs/tags/}"   # packages/ui/v2.1.0
+
+          PACKAGE=$(echo "$FULL_TAG" | cut -d/ -f2)
+          VERSION=$(echo "$FULL_TAG" | cut -d/ -f3 | sed 's/^v//')
+
+          echo "FULL_TAG=$FULL_TAG" >> $GITHUB_ENV
+          echo "PACKAGE=$PACKAGE" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Resolve package name
+        run: |
+          PACKAGE_DIR="packages/$PACKAGE"
+
+          if [ -f "$PACKAGE_DIR/package.json" ]; then
+            PACKAGE_NAME=$(node -p "require('./$PACKAGE_DIR/package.json').name")
+          else
+            PACKAGE_NAME="$PACKAGE"
+          fi
+
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+
+      - name: Extract changelog
+        run: |
+          PACKAGE_DIR="packages/$PACKAGE"
+          CHANGELOG_FILE="$PACKAGE_DIR/CHANGELOG.md"
+
+          if [ -f "$CHANGELOG_FILE" ]; then
+            awk "/^## \[$VERSION\]/ {flag=1; next} /^## \[/ {flag=0} flag" "$CHANGELOG_FILE" > changelog_body.txt
+          else
+            echo "No changelog available" > changelog_body.txt
+          fi
+
+      - name: Add contributors to changelog
+        id: contributors
+        run: |
+          PACKAGE_DIR="packages/$PACKAGE"
+          CHANGELOG_FILE="$PACKAGE_DIR/CHANGELOG.md"
+
+          # Get previous tag for the same package
+          PREV_TAG=$(git tag -l "packages/$PACKAGE/v*" | grep -v "$VERSION" | sort -V | tail -n1 || echo "")
+
+          # Get list of contributors since previous tag
+          if [ -n "$PREV_TAG" ]; then
+            CONTRIBUTORS=$(git log $PREV_TAG..HEAD --pretty=format:"%an" -- $PACKAGE_DIR | sort -u)
+          else
+            CONTRIBUTORS=$(git log --pretty=format:"%an" -- $PACKAGE_DIR | sort -u)
+          fi
+
+          # Generate @contributor link with GitHub profile URL
+          CONTRIBUTORS_MD=""
+          for NAME in $CONTRIBUTORS; do
+            USERNAME=$(echo $NAME | tr -d ' ')   
+            CONTRIBUTORS_MD="$CONTRIBUTORS_MD\n[@$USERNAME](https://github.com/$USERNAME)"
+          done
+
+          # Add contributors to changelog body
+          if [ -n "$CONTRIBUTORS_MD" ]; then
+            echo -e "\n❤️ Thank You$CONTRIBUTORS_MD" >> changelog_body.txt
+          fi
+
+          # Update CHANGELOG_BODY variable
+          echo "CHANGELOG_BODY<<EOF" >> $GITHUB_ENV
+          cat changelog_body.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Prepare release body
+        run: |
+          echo "CHANGELOG_BODY<<EOF" >> $GITHUB_ENV
+          cat changelog_body.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.FULL_TAG }}
+          release_name: "${{ env.PACKAGE_NAME }} v${{ env.VERSION }}"
+          body: ${{ env.CHANGELOG_BODY }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
